@@ -10,8 +10,9 @@
 
 Assumptions:
 1. Prices are given in terms of notional which is market standard for each swaption (say 1y1y, 1y5y)
-2. Prices are for ATM straddle, receivers on low strikes, payers on high strikes
-3. Annuity is assumed to be 1 for each swaption. Annuity assumption is an extra (non-market) assumption, this is done to focus
+2. All swaptions have prices on the same relative strikes. This can assumption can be relaxed with minor tweaks in code/input file
+3. Prices are for ATM straddle, receivers on low strikes, payers on high strikes
+4. Annuity is assumed to be 1 for each swaption. Annuity assumption is an extra (non-market) assumption, this is done to focus
    only on estimating the volatility curve. This means the discounting curve is known or already calibrated.
 
 Model Setup:
@@ -27,3 +28,21 @@ Model Setup:
 8. Vega is taken as market vega ie vega wrt Market IV (to save compute :) ). Model IV vega is better
 9. It helps to have a sound starting value of pho, vol of vol as the cost function may have a flat valley.
 10. Hence previous day value would be a better start for next day calibration
+
+How to run the code:
+1. Rn the python code, it will ask for 3 inputs: no of days, input file name\path, output file name\path
+2. Input file has data for 5 days for prices and ATM forward, so answer 5 to 1st question. You can put this any number but ensure
+   to update the input file (instructions preesnt on input file as well)
+3. Input the 'input file' name as the name of input file, input 'output file' name as your choice
+
+How to interpret the output file:
+1. Output file has sanity check on the inputs, tab 2_Input_Sanity
+2. Calibration quality on different metrics is given on tab 7_Calib_Quality
+3. Model IV - Market IV is given on tab 9_IV_Fit_Error_bps: this shows that calibration is good for ATM and near by strikes but fails
+   for far off strikes like ATM - 300 or ATM + 400
+4. We also check test of calibration by repricing the same swaptions from which model params were determined (tab 10_Price_RoundTrip)
+   This shows how good the market prices are implied by the model, which should be a good test of the calibration
+5. On this tab, 2nd and 3rd grid shows the error in price and % terms. We see that % change in prices for far-off strikes are often
+   N/M (not meaningful) as price < 0.5bps and hence large IV or % price error. This may happen due to low vega of these options
+6. For ex - on Day1, 1y1y has very low vega for ATM-300 and ATM+400 strikes compared to ATM and % error in price is high. But for   10y01y, far off strikes have vega >=45% of ATM vega and hence the calibration is better for 10y10y. Infact Model IV - Market IV for
+   10y10y on Day1 is <= 0,02 bps across all strikes 
