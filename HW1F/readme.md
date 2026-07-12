@@ -3,7 +3,7 @@ HW1F is a commonly used models fit the today's yield curve exactly and then prov
 swaptions.
 Once solved, it can provide distribution for any rate in a future time (say distribution of 5y spot rate at future time = 1y)
 HW1F is a good model to price early exercise products like Bermudan swaptions (trinomial), callable bonds, callable swaps on a 
-single rate (say 5y swap rate, not (5y - 2y) swap rate), callable bond (bond - bermudann swaption), callable swaps
+single rate (say 5y swap rate, not (5y - 2y) swap rate), callable bond (bond - bermudann swaption).
 Path dependent options can also be priced by HW1F but we have to use a MC simlulation as storing multiple average values across 
 multiple paths at a given node can be compute heavy
 Limitations: One factor (vol is not stochastic), no smile, normal rates (rates can go negative) - issues across tree or MC
@@ -65,8 +65,8 @@ There are solved sheets and **practice sheets** for the user
 - **One factor**: a single Brownian motion drives the whole curve, so all rates are instantaneously perfectly correlated — the model can't capture partial decorrelation across tenors that real curves show.
 - **No smile**: one constant σ per calibration, so it can't fit a volatility skew/smile across strikes — only ATM-level vol.
 - **Normal rates**: the short rate is Gaussian, so it can go negative with positive probability, which can cause issues in tree/MC construction if unbounded.
-- **Calibrated to caps only, no swaptions**: this is the main limitation of **this specific calibration**. Caps are a strip of independent caplets, each pricing off the volatility of a single forward rate — they're informative about σ but only weakly identify a, since a's main effect is on how strongly *different* points on the curve decorrelate from each other, which caplets don't see. That weak identification shows up directly in the result above: solved a = 0.163 vs. true a = 0.15, even though the cap fit itself is excellent.
-  Swaptions, by contrast, price a *single* rate (the swap rate) that is itself a blend of multiple forward rates — so swaption prices are far more sensitive to a. Calibrating jointly to caps *and* swaptions pins down both parameters more robustly: σ mainly from caps, a mainly from swaptions. This also matters practically — Bermudan swaptions and callable swaps (the products HW1F is normally used for) reference swap-rate dynamics, so a model calibrated only to caps can misprice the early-exercise value even while fitting the cap market perfectly.
+- **Calibrated to caps only, no swaptions**: this is the main limitation of **this specific calibration**. Caps are a strip of independent caplets, each pricing off the volatility of a single forward rate — they're informative about σ but only weakly identify a, since a's main effect is on how strongly **different** points on the curve decorrelate from each other, which caplets don't see. That weak identification shows up directly in the result above: solved a = 0.163 vs. true a = 0.15, even though the cap fit itself is excellent.
+  Swaptions, by contrast, price a **single** rate (the swap rate) that is itself a blend of multiple forward rates — so swaption prices are far more sensitive to a. Calibrating jointly to **caps and swaptions** pins down both parameters more robustly: σ mainly from caps, a mainly from swaptions. This also matters practically — Bermudan swaptions and callable swaps (the products HW1F is normally used for) reference swap-rate dynamics, so a model calibrated only to caps can misprice the early-exercise value even while fitting the cap market perfectly.
 
 ## 7. Possible Extensions
 
