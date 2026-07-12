@@ -31,7 +31,8 @@ dr(t) = a(θ(t) − r(t))dt + σ·dW(t)
 - Callable bond ≈ bond − Bermudan swaption, priced consistently off the same calibrated tree.
 - Path-dependent payoffs are possible via Monte Carlo, but become compute-heavy since you need to store/average state across many paths at each time node — a tree is far cheaper when it's applicable.
 
-## 3. What's In This Workbook
+## 3. What's In This Workbook:
+There are solved sheets and **practice sheets** for the user
 
 | Sheet | Role |
 |---|---|
@@ -44,20 +45,12 @@ dr(t) = a(θ(t) − r(t))dt + σ·dW(t)
 | `Parameters` | a, σ, r₀ — a and σ are the Solver's changing cells |
 | `TRY_*` | Blank practice copies of the above (yellow cells + a check column) so you can redo the bootstrap and caplet math yourself and confirm against the solved answer |
 
-## 4. Calibration Workflow — Step by Step
+## 4. Calibration Workflow
 
-1. **Build the discounting curve** (`OIS_Curve`): bootstrap OIS money market + OIS swap rates into discount factors P(0,T), interpolating illiquid tenors on zero rates.
-2. **Build the projection curve** (`Proj_Curve`): SOFR futures give the short end (0–2Y) directly as forward rates; IRS bootstrap extends it to 10Y.
-3. **Derive ATM cap strikes** (`Par_Rates`): par swap rate per cap maturity, computed dual-curve — forward rates from the projection curve, discounting from the OIS curve.
-4. **Price each caplet analytically** (`HW_Caplets`): HW1F caplet formula (equivalent to a put on a zero-coupon bond) applied caplet-by-caplet, using trial values of a and σ.
-5. **Sum caplets → model cap price** per maturity.
-6. **Compare to market cap price** (`Cap_Prices`): squared error per maturity, summed into one SSE cell.
-7. **Solver minimizes SSE** by varying a and σ:
-   - Objective: `Cap_Prices!F10` → Minimize
-   - By changing: `Parameters!C4` (a), `Parameters!C5` (σ)
-   - Constraints: a ≥ 0.001, σ ≥ 0.0001
-   - Method: GRG Nonlinear
-8. **Result**: solved a ≈ 0.163, σ ≈ 0.0081, vs. true embedded a = 0.15, σ = 0.008 — close but not exact (see Limitations below for why).
+1. Bootstraps a **dual-curve setup** (OIS discounting + SOFR projection curve)
+2. Derives ATM cap strikes from the dual-curve par rates
+3. Prices caplets analytically under HW1F
+4. **Calibrates (a, σ) via Excel Solver** to match market cap prices (minimizes SSE)
 
 ## 5. How To Reproduce This Yourself
 
@@ -72,7 +65,7 @@ dr(t) = a(θ(t) − r(t))dt + σ·dW(t)
 - **One factor**: a single Brownian motion drives the whole curve, so all rates are instantaneously perfectly correlated — the model can't capture partial decorrelation across tenors that real curves show.
 - **No smile**: one constant σ per calibration, so it can't fit a volatility skew/smile across strikes — only ATM-level vol.
 - **Normal rates**: the short rate is Gaussian, so it can go negative with positive probability, which can cause issues in tree/MC construction if unbounded.
-- **Calibrated to caps only, no swaptions**: this is the main limitation of *this specific calibration*. Caps are a strip of independent caplets, each pricing off the volatility of a single forward rate — they're informative about σ but only weakly identify a, since a's main effect is on how strongly *different* points on the curve decorrelate from each other, which caplets don't see. That weak identification shows up directly in the result above: solved a = 0.163 vs. true a = 0.15, even though the cap fit itself is excellent.
+- **Calibrated to caps only, no swaptions**: this is the main limitation of **this specific calibration**. Caps are a strip of independent caplets, each pricing off the volatility of a single forward rate — they're informative about σ but only weakly identify a, since a's main effect is on how strongly *different* points on the curve decorrelate from each other, which caplets don't see. That weak identification shows up directly in the result above: solved a = 0.163 vs. true a = 0.15, even though the cap fit itself is excellent.
   Swaptions, by contrast, price a *single* rate (the swap rate) that is itself a blend of multiple forward rates — so swaption prices are far more sensitive to a. Calibrating jointly to caps *and* swaptions pins down both parameters more robustly: σ mainly from caps, a mainly from swaptions. This also matters practically — Bermudan swaptions and callable swaps (the products HW1F is normally used for) reference swap-rate dynamics, so a model calibrated only to caps can misprice the early-exercise value even while fitting the cap market perfectly.
 
 ## 7. Possible Extensions
