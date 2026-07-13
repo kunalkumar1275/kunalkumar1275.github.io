@@ -36,9 +36,9 @@ There are solved sheets and **practice sheets** for the user
 
 | Sheet | Role |
 |---|---|
-| `Instruments` | Raw market quotes (input only — blue cells) |
+| `Instruments` | Raw market quotes |
 | `OIS_Curve` | Bootstrapped discounting curve from OIS money market + OIS swaps |
-| `Proj_Curve` | Bootstrapped projection curve from SOFR futures (0–2Y) + IRS (2–10Y) |
+| `Proj_Curve` | Bootstrapped projection curve from SOFR futures + IRS |
 | `Par_Rates` | Dual-curve ATM par swap rates — used as cap strikes K |
 | `HW_Caplets` | Analytical HW1F caplet pricing, per cap maturity |
 | `Cap_Prices` | Model vs. market cap prices, squared error — the Solver target |
