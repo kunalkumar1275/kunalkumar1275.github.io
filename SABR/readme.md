@@ -1,6 +1,6 @@
 1. SABR is stochastic volatility model, widely used to construct volatility curve for swaptions
 2. SABR has 4 parameters: alpha, beta, rho (skew, correlation), vol of vol (convexity)
-3. This example uses market data of USD swaptions for given expiry/maturity for a range of strikes.
+3. This example uses market data of USD swaptions for a given expiry/maturity for a range of strikes.
 4. Market prices are present for the same instruments (exp, mat, strike) for 5 days
 5. Inputs to the model for each instrument (exp/mat) across strikes per day: ATM forward rate, Prices
 6. Beta is assumed to be fixed for a given ccy. For USD, beta = 0
